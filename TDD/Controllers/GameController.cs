@@ -2,7 +2,7 @@
 {
     public class Game
     {
-        private IConsoleWrapper _console;
+        private readonly IConsoleWrapper _console;
 
         public Game(IConsoleWrapper console)
         {

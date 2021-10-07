@@ -1,17 +1,56 @@
-﻿namespace TDD.Models
+﻿using System;
+using System.Collections.Generic;
+using TDD.Models.Units;
+
+namespace TDD.Models
 {
   public class Board : IBoard
   {
-    public IUnit[,] Units { get; }
+    public int[,] UnitIds { get; }
+    private readonly Dictionary<int, IUnit> _unitMap;
 
-    public Board()
+    public Board(int x = 4, int y = 4)
     {
-      Units = new IUnit[4, 4];
+      UnitIds = new int[x, y];
+      _unitMap = new Dictionary<int, IUnit>();
     }
 
-    public void Place(Mage unit, int x, int y)
+    public void Place(IUnit unit, int x, int y)
     {
-      Units[x,y] = unit;
+      _unitMap.Add(unit.Id, unit);
+      UnitIds[x,y] = unit.Id;
+    }
+
+    public bool MoveUnitTo(int unitId, int x, int y)
+    {
+      if (UnitIds[x, y] != 0) return false;
+      RemoveUnitFromBoard(unitId);
+      UnitIds[x, y] = unitId;
+      return true;
+    }
+
+    public IUnit LookupUnit(int unitId)
+    {
+      return _unitMap[unitId];
+    }
+
+    private void RemoveUnitFromBoard(int unitId)
+    {
+      var (x, y) = GetCoordsForUnitId(unitId);
+      UnitIds[x, y] = 0;
+    }
+
+    private Tuple<int, int> GetCoordsForUnitId(int unitId)
+    {
+      for (var x = 0; x < UnitIds.GetLength(0); x++)
+      {
+        for (var y = 0; y < UnitIds.GetLength(1); y++)
+        {
+          if (UnitIds[x, y] == unitId) return new Tuple<int, int>(x, y);
+        }
+      }
+
+      throw new KeyNotFoundException($"Unable to find unit id {unitId}");
     }
   }
 }

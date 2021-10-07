@@ -1,8 +1,12 @@
-﻿namespace TDD.Models
+﻿using TDD.Models.Units;
+
+namespace TDD.Models
 {
   public interface IBoard
   {
-    public IUnit[,] Units { get; }
-    public void Place(Mage unit, int x, int y);
+    public int[,] UnitIds { get; }
+    public void Place(IUnit unit, int x, int y);
+    bool MoveUnitTo(int unitId, int x, int y);
+    IUnit LookupUnit(int unitId);
   }
 }

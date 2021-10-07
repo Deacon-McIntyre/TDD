@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using Moq;
 using NUnit.Framework;
 using TDD.Models;
+using TDD.Models.Units;
 
 namespace TDD
 {
@@ -13,7 +13,7 @@ namespace TDD
     private ConsoleView _view;
     private Mock<IBoard> _boardMock;
     private Mock<IConsoleWrapper> _consoleMock;
-
+    
     private List<string> _consoleMessages;
 
     [SetUp]
@@ -35,7 +35,7 @@ namespace TDD
     [Test]
     public void CanDisplayEmptyBoard()
     {
-      _boardMock.SetupGet(b => b.Units).Returns(GetTestBoard(4, 4));
+      SetupBoard(4, 4);
       _view.PrintBoard();
       
       _consoleMock.Verify(c => c.WriteLine(It.IsAny<string>()), Times.Exactly(4));
@@ -53,7 +53,7 @@ namespace TDD
         new(0, 0),
         new(1, 2)
       };
-      _boardMock.SetupGet(b => b.Units).Returns(GetTestBoard(4, 4, unitCoords));
+      SetupBoard(4, 4, unitCoords);
       _view.PrintBoard();
       
       _consoleMock.Verify(c => c.WriteLine(It.IsAny<string>()), Times.Exactly(4));
@@ -63,19 +63,31 @@ namespace TDD
       Assert.That(_consoleMessages[3], Is.EqualTo("[ ][ ][ ][ ]"));
     }
 
-    private IUnit[,] GetTestBoard(int x, int y, List<Tuple<int, int>> unitCoords = null)
+    private void SetupBoard(int x, int y, List<Tuple<int, int>> unitCoords = null)
     {
-      var units = new IUnit[x, y];
+      var (units, unitMap) = GetTestBoard(4, 4, unitCoords);
+      _boardMock.SetupGet(b => b.UnitIds).Returns(units);
+      _boardMock.Setup(b => b.LookupUnit(It.IsAny<int>())).Returns<int>(id => unitMap[id]);
+    }
+
+    private Tuple<int[,], Dictionary<int, IUnit>> GetTestBoard(int x, int y, List<Tuple<int, int>> unitCoords = null)
+    {
+      var units = new int[x, y];
+      var unitMap = new Dictionary<int, IUnit>();
+      var idCounter = 1;
+      
       if (unitCoords != null)
       {
         foreach (var (unitX, unitY) in unitCoords)
         {
           // Flip X and Y here to make the visualizations in the test make sense
-          units[unitY, unitX] = new Mage();
+          units[unitY, unitX] = idCounter;
+          unitMap.Add(idCounter, new Mage(idCounter));
+          idCounter++;
         }
       }
 
-      return units;
+      return new Tuple<int[,], Dictionary<int, IUnit>>(units, unitMap);
     }
   }
 }

@@ -15,12 +15,13 @@ namespace TDD
 
     public void PrintBoard()
     {
-      for (var x = 0; x < _board.Units.GetLength(0); x++)
+      for (var x = 0; x < _board.UnitIds.GetLength(0); x++)
       {
         var row = "";
-        for (var y = 0; y < _board.Units.GetLength(1); y++)
+        for (var y = 0; y < _board.UnitIds.GetLength(1); y++)
         {
-          row += $"[{(_board.Units[x, y] != null ? _board.Units[x, y] : ' ')}]";
+          var unitId = _board.UnitIds[x, y];
+          row += $"[{(unitId != 0 ? _board.LookupUnit(unitId) : ' ')}]";
         }
         _console.WriteLine(row);
       }
