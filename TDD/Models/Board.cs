@@ -15,18 +15,29 @@ namespace TDD.Models
       _unitMap = new Dictionary<int, IUnit>();
     }
 
-    public void Place(IUnit unit, int x, int y)
+    public bool TryPlace(IUnit unit, int x, int y)
     {
-      _unitMap.Add(unit.Id, unit);
+      if (OutOfBoundsOrOccupied(x, y)) return false;
       UnitIds[x,y] = unit.Id;
+      _unitMap.Add(unit.Id, unit);
+      return true;
     }
 
-    public bool MoveUnitTo(int unitId, int x, int y)
+    public bool TryMoveUnitTo(int unitId, int x, int y)
     {
-      if (UnitIds[x, y] != 0) return false;
+      if (OutOfBoundsOrOccupied(x, y)) return false;
       RemoveUnitFromBoard(unitId);
       UnitIds[x, y] = unitId;
       return true;
+    }
+
+    private bool OutOfBoundsOrOccupied(int x, int y)
+    {
+      return x < 0 ||
+             y < 0 ||
+             x >= UnitIds.GetLength(0) ||
+             y >= UnitIds.GetLength(1) ||
+             UnitIds[x, y] != 0 ;
     }
 
     public IUnit LookupUnit(int unitId)

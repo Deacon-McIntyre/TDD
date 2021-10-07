@@ -5,8 +5,8 @@ namespace TDD.Models
   public interface IBoard
   {
     public int[,] UnitIds { get; }
-    public void Place(IUnit unit, int x, int y);
-    bool MoveUnitTo(int unitId, int x, int y);
-    IUnit LookupUnit(int unitId);
+    public bool TryPlace(IUnit unit, int x, int y);
+    public bool TryMoveUnitTo(int unitId, int x, int y);
+    public IUnit LookupUnit(int unitId);
   }
 }
