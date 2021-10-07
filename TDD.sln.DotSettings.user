@@ -1,0 +1,21 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/Highlighting/HighlightingSourceSnapshotLocation/@EntryValue">C:\Users\Deacon\AppData\Local\JetBrains\Rider2021.1\resharper-host\temp\Rider\vAny\CoverageData\_TDD.1040206749\Snapshot\snapshot.utdcvr</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=1d4b34e7_002Dc5d0_002D4761_002Dab36_002Daa9310263b30/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CanCreateGame" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.Tests.CanCreateGame&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.Tests.BowlingGameCanAskForInput&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=4acb1d66_002Dcc51_002D4442_002D8423_002D66a453a13799/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CanCreateGame #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.BoardTests.CanCreateBoard&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.BoardTests.CanPlaceUnitOnBoard&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.ConsoleViewTests.CanDisplayEmptyBoard&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.ConsoleViewTests.CanDisplayBoardWithUnits&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=80dbd856_002Da132_002D4155_002Da469_002D11a62a792ced/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Tests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;NUnit3x::A71B7EA4-5AA6-4A52-9555-2A616BE02E83::net5.0::TDD.Tests&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>
