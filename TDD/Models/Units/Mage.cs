@@ -1,15 +1,10 @@
-﻿using System;
-using TDD.Models.Units;
-
-namespace TDD.Models
+﻿namespace TDD.Models.Units
 {
-  public class Mage : IUnit
+  public class Mage : UnitBase
   {
-    public int Id { get; }
-
-    public Mage(int id)
+    public Mage(int id) : base(id)
     {
-      Id = id;
+      HitPoints = 2;
     }
 
     public override string ToString()

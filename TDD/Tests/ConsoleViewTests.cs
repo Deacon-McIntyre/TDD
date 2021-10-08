@@ -70,10 +70,10 @@ namespace TDD
       _boardMock.Setup(b => b.LookupUnit(It.IsAny<int>())).Returns<int>(id => unitMap[id]);
     }
 
-    private Tuple<int[,], Dictionary<int, IUnit>> GetTestBoard(int x, int y, List<Tuple<int, int>> unitCoords = null)
+    private Tuple<int[,], Dictionary<int, UnitBase>> GetTestBoard(int x, int y, List<Tuple<int, int>> unitCoords = null)
     {
       var units = new int[x, y];
-      var unitMap = new Dictionary<int, IUnit>();
+      var unitMap = new Dictionary<int, UnitBase>();
       var idCounter = 1;
       
       if (unitCoords != null)
@@ -87,7 +87,7 @@ namespace TDD
         }
       }
 
-      return new Tuple<int[,], Dictionary<int, IUnit>>(units, unitMap);
+      return new Tuple<int[,], Dictionary<int, UnitBase>>(units, unitMap);
     }
   }
 }

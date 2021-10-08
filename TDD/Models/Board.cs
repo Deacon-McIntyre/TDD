@@ -7,19 +7,19 @@ namespace TDD.Models
   public class Board : IBoard
   {
     public int[,] UnitIds { get; }
-    private readonly Dictionary<int, IUnit> _unitMap;
+    private readonly Dictionary<int, UnitBase> _unitMap;
 
     public Board(int x = 4, int y = 4)
     {
       UnitIds = new int[x, y];
-      _unitMap = new Dictionary<int, IUnit>();
+      _unitMap = new Dictionary<int, UnitBase>();
     }
 
-    public bool TryPlace(IUnit unit, int x, int y)
+    public bool TryPlace(UnitBase unitBase, int x, int y)
     {
       if (OutOfBoundsOrOccupied(x, y)) return false;
-      UnitIds[x,y] = unit.Id;
-      _unitMap.Add(unit.Id, unit);
+      UnitIds[x,y] = unitBase.Id;
+      _unitMap.Add(unitBase.Id, unitBase);
       return true;
     }
 
@@ -40,9 +40,20 @@ namespace TDD.Models
              UnitIds[x, y] != 0 ;
     }
 
-    public IUnit LookupUnit(int unitId)
+    public UnitBase LookupUnit(int unitId)
     {
       return _unitMap[unitId];
+    }
+
+    public void DeleteUnit(int unitId)
+    {
+      if (_unitMap.ContainsKey(unitId))
+      {
+        _unitMap.Remove(unitId);
+        RemoveUnitFromBoard(unitId);
+        return;
+      }
+      throw new KeyNotFoundException($"Unable to delete unit id {unitId}, not found");
     }
 
     private void RemoveUnitFromBoard(int unitId)
@@ -61,7 +72,7 @@ namespace TDD.Models
         }
       }
 
-      throw new KeyNotFoundException($"Unable to find unit id {unitId}");
+      throw new KeyNotFoundException($"Unable to get coords for unit id {unitId}, unit not found");
     }
   }
 }

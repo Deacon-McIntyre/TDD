@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 using TDD.Models;
+using TDD.Models.Units;
 
 namespace TDD.Tests
 {
@@ -8,20 +9,28 @@ namespace TDD.Tests
     public class BoardTests
     {
         private Board _board;
-        private const int UnitId = 1; 
+        private const int UnitId = 1;
 
         [SetUp]
         public void Setup()
         {
             _board = new Board();
         }
+
+        #region Create
         
         [Test]
         public void CanCreateBoard()
         {
             Assert.NotNull(_board);
         }
+        
+        #endregion
 
+        // ======================================================
+        
+        #region TryPlace
+        
         [Test]
         public void TryPlace_BaseCase_PlacesUnit()
         {
@@ -58,7 +67,12 @@ namespace TDD.Tests
             
             Assert.That(success, Is.False);
         }
+        #endregion
+        
+        // ======================================================
 
+        #region TryMoveUnitTo
+        
         [Test]
         public void TryMoveUnitTo_BaseCase_MovesUnitReturnsTrue()
         {
@@ -89,7 +103,7 @@ namespace TDD.Tests
         }
 
         [Test]
-        public void TryMoveUnitTo_UnitInTheWay_DoesNotPlaceAndReturnsFalse()
+        public void TryMoveUnitTo_UnitInTheWay_DoesNotMoveAndReturnsFalse()
         {
             const int unitId2 = UnitId + 1;
             var unit = new Mage(UnitId);
@@ -118,6 +132,12 @@ namespace TDD.Tests
             Assert.That(success, Is.False);
         }
 
+        #endregion
+        
+        // ======================================================
+        
+        #region MyRegion
+
         [Test]
         public void LookupUnit_UnitExists_ReturnsUnit()
         {
@@ -133,5 +153,30 @@ namespace TDD.Tests
         {
             Assert.Throws<KeyNotFoundException>(() => _board.LookupUnit(0));
         }
+
+        #endregion
+        
+        // ======================================================
+
+        #region MyRegion
+
+        [Test]
+        public void DeleteUnit_UnitExists_DeletesUnit()
+        {
+            var unit = new Mage(UnitId);
+            _board.TryPlace(unit, 0, 0);
+            _board.DeleteUnit(UnitId);
+            
+            Assert.That(_board.UnitIds[0, 0], Is.Zero);
+            Assert.Throws<KeyNotFoundException>(() => _board.LookupUnit(UnitId));
+        }
+        
+        [Test]
+        public void DeleteUnit_UnitDoesNotExist_ThrowsException()
+        {
+            Assert.Throws<KeyNotFoundException>(() => _board.DeleteUnit(UnitId));
+        }
+
+        #endregion
     }
 }
