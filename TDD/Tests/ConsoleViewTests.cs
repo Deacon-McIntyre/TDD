@@ -80,8 +80,7 @@ namespace TDD
       {
         foreach (var (unitX, unitY) in unitCoords)
         {
-          // Flip X and Y here to make the visualizations in the test make sense
-          units[unitY, unitX] = idCounter;
+          units[unitX, unitY] = idCounter;
           unitMap.Add(idCounter, new Mage(idCounter));
           idCounter++;
         }

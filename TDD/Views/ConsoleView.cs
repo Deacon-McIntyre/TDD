@@ -20,7 +20,8 @@ namespace TDD
         var row = "";
         for (var y = 0; y < _board.UnitIds.GetLength(1); y++)
         {
-          var unitId = _board.UnitIds[x, y];
+          // Flip X and Y here to make visualization look as expected
+          var unitId = _board.UnitIds[y, x];
           row += $"[{(unitId != 0 ? _board.LookupUnit(unitId) : ' ')}]";
         }
         _console.WriteLine(row);

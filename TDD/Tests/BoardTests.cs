@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Moq;
 using NUnit.Framework;
 using TDD.Models;
 using TDD.Models.Units;
@@ -41,7 +42,7 @@ namespace TDD.Tests
         }
 
         [Test]
-        public void TryPlace_UnitInTheWay_DoesNotPlaceReturnsFalse()
+        public void TryPlace_SolidUnitInTheWay_DoesNotPlaceReturnsFalse()
         {
             const int unitId2 = UnitId + 1;
             var unit = new Mage(UnitId);
@@ -51,6 +52,23 @@ namespace TDD.Tests
             
             Assert.That(success, Is.False);
             Assert.That(_board.UnitIds[0, 0], Is.EqualTo(UnitId));
+        }
+
+        [Test]
+        public void TryPlace_NonSolidUnitInTheWay_SucceedsAndCallsOnOverlapMethod()
+        {
+            const int unitId2 = UnitId + 1;
+            var unitMock = new Mock<UnitBase>(UnitId);
+            unitMock.Setup(unit => unit.Solid).Returns(false);
+            var unit2 = new Mage(unitId2);
+
+            _board.TryPlace(unitMock.Object, 0, 0);
+            var success = _board.TryPlace(unit2, 0, 0);
+
+            Assert.That(success, Is.True);
+            unitMock.Verify(unit => unit.OnOverlap(_board, unit2), Times.Once);
+
+            //TODO: Make this same test for TryMoveUnitTo
         }
 
         [TestCase(-1, -1)]
@@ -132,11 +150,22 @@ namespace TDD.Tests
             Assert.That(success, Is.False);
         }
 
-        #endregion
+        [Test]
+        public void TryMoveUnitTo_UnitIsStationary_DoesNotMoveAndReturnsFalse()
+        {
+            var unit = new Wall(UnitId);
+            _board.TryPlace(unit, 0, 0);
+            var success = _board.TryMoveUnitTo(UnitId, 2, 2);
+
+            Assert.That(success, Is.False);
+            Assert.That(_board.UnitIds[0, 0], Is.EqualTo(UnitId));
+        }
+
+        #endregion TryMoveUnitTo
         
         // ======================================================
         
-        #region MyRegion
+        #region LookupUnit
 
         [Test]
         public void LookupUnit_UnitExists_ReturnsUnit()
@@ -154,11 +183,11 @@ namespace TDD.Tests
             Assert.Throws<KeyNotFoundException>(() => _board.LookupUnit(0));
         }
 
-        #endregion
+        #endregion LookupUnit
         
         // ======================================================
 
-        #region MyRegion
+        #region DeleteUnit
 
         [Test]
         public void DeleteUnit_UnitExists_DeletesUnit()
@@ -177,6 +206,6 @@ namespace TDD.Tests
             Assert.Throws<KeyNotFoundException>(() => _board.DeleteUnit(UnitId));
         }
 
-        #endregion
+        #endregion DeleteUnit
     }
 }

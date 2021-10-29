@@ -25,7 +25,7 @@ namespace TDD.Models
 
     public bool TryMoveUnitTo(int unitId, int x, int y)
     {
-      if (OutOfBoundsOrOccupied(x, y)) return false;
+      if (OutOfBoundsOrOccupied(x, y) || UnitIsStationary(unitId)) return false;
       RemoveUnitFromBoard(unitId);
       UnitIds[x, y] = unitId;
       return true;
@@ -33,11 +33,19 @@ namespace TDD.Models
 
     private bool OutOfBoundsOrOccupied(int x, int y)
     {
-      return x < 0 ||
-             y < 0 ||
-             x >= UnitIds.GetLength(0) ||
-             y >= UnitIds.GetLength(1) ||
-             UnitIds[x, y] != 0 ;
+      if (x < 0 || y < 0 ||
+          x >= UnitIds.GetLength(0) ||
+          y >= UnitIds.GetLength(1))
+        return true;
+
+      // Only occupied if there a solid unit in the way
+      return UnitIds[x, y] != 0 && _unitMap[UnitIds[x, y]].Solid;
+    }
+
+    private bool UnitIsStationary(int unitId)
+    {
+      var unit = LookupUnit(unitId);
+      return unit.Stationary;
     }
 
     public UnitBase LookupUnit(int unitId)

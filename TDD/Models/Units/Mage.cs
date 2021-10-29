@@ -5,6 +5,7 @@
     public Mage(int id) : base(id)
     {
       HitPoints = 2;
+      Stationary = false;
     }
 
     public override string ToString()
