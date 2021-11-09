@@ -15,6 +15,7 @@ namespace TDD
 
     public void PrintBoard()
     {
+      _console.Clear();
       for (var x = 0; x < _board.UnitIds.GetLength(0); x++)
       {
         var row = "";

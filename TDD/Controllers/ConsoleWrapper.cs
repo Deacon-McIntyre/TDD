@@ -13,10 +13,20 @@ namespace TDD
         {
             return Console.ReadLine();
         }
+
+        public char ReadKey()
+        {
+            return Console.ReadKey(false).KeyChar;
+        }
         
         public void WriteLine(string line)
         {
             Console.WriteLine(line);
+        }
+
+        public void Clear()
+        {
+            Console.Clear();
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TDD.Models.Enums;
 using TDD.Models.Units;
 
 namespace TDD.Models
@@ -18,7 +19,8 @@ namespace TDD.Models
     public bool TryPlace(UnitBase unitBase, int x, int y)
     {
       if (OutOfBoundsOrOccupied(x, y)) return false;
-      UnitIds[x,y] = unitBase.Id;
+      PerformOverlapAction(unitBase, x, y);
+      AddUnitToBoard(unitBase.Id, x, y);
       _unitMap.Add(unitBase.Id, unitBase);
       return true;
     }
@@ -26,9 +28,41 @@ namespace TDD.Models
     public bool TryMoveUnitTo(int unitId, int x, int y)
     {
       if (OutOfBoundsOrOccupied(x, y) || UnitIsStationary(unitId)) return false;
-      RemoveUnitFromBoard(unitId);
-      UnitIds[x, y] = unitId;
+      if (PerformOverlapAction(LookupUnit(unitId), x, y))
+      {
+        // PerformOverlapAction should handle the moving or whatever
+      }
+      else
+      {
+        RemoveUnitFromBoard(unitId);
+        AddUnitToBoard(unitId, x, y);
+      }
       return true;
+    }
+
+    public bool TryPush(int unitId, Cardinal direction)
+    {
+      var (x, y) = GetCoordsForUnitId(unitId);
+      return direction switch
+      {
+        Cardinal.North => TryMoveUnitTo(unitId, x, y - 1),
+        Cardinal.South => TryMoveUnitTo(unitId, x, y + 1),
+        Cardinal.East => TryMoveUnitTo(unitId, x + 1, y),
+        Cardinal.West => TryMoveUnitTo(unitId, x - 1, y),
+        _ => throw new ArgumentOutOfRangeException(nameof(direction), direction, $"Don't know the direction {direction}")
+      };
+    }
+
+    private bool PerformOverlapAction(UnitBase unitOnTop, int x, int y)
+    {
+      var existingUnitId = UnitIds[x, y];
+      if (existingUnitId == 0) return false;
+      var existingUnit = _unitMap[existingUnitId];
+      if (!existingUnit.Solid)
+      {
+        return existingUnit.OnOverlap(this, unitOnTop);
+      }
+      return false;
     }
 
     private bool OutOfBoundsOrOccupied(int x, int y)
@@ -62,6 +96,11 @@ namespace TDD.Models
         return;
       }
       throw new KeyNotFoundException($"Unable to delete unit id {unitId}, not found");
+    }
+
+    private void AddUnitToBoard(int unitId, int x, int y)
+    {
+      UnitIds[x, y] = unitId;
     }
 
     private void RemoveUnitFromBoard(int unitId)

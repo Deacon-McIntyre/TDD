@@ -19,9 +19,10 @@
       HitPoints -= amount;
     }
 
-    public virtual void OnOverlap(Board board, UnitBase overlappingUnit)
+    public virtual bool OnOverlap(Board board, UnitBase overlappingUnit)
     {
       // Do nothing by default
+      return false;
     }
 
     public abstract override string ToString();

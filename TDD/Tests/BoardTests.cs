@@ -67,8 +67,6 @@ namespace TDD.Tests
 
             Assert.That(success, Is.True);
             unitMock.Verify(unit => unit.OnOverlap(_board, unit2), Times.Once);
-
-            //TODO: Make this same test for TryMoveUnitTo
         }
 
         [TestCase(-1, -1)]
@@ -159,6 +157,22 @@ namespace TDD.Tests
 
             Assert.That(success, Is.False);
             Assert.That(_board.UnitIds[0, 0], Is.EqualTo(UnitId));
+        }
+
+        [Test]
+        public void TryMoveUnitTo_NonSolidUnitInTheWay_SucceedsAndCallsOnOverlapMethod()
+        {
+            const int unitId2 = UnitId + 1;
+            var unitMock = new Mock<UnitBase>(UnitId);
+            unitMock.Setup(unit => unit.Solid).Returns(false);
+            var unit2 = new Mage(unitId2);
+
+            _board.TryPlace(unitMock.Object, 0, 0);
+            _board.TryPlace(unit2, 1, 1);
+            var success = _board.TryMoveUnitTo(unit2.Id, 0, 0);
+
+            Assert.That(success, Is.True);
+            unitMock.Verify(unit => unit.OnOverlap(_board, unit2), Times.Once);
         }
 
         #endregion TryMoveUnitTo

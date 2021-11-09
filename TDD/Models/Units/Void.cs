@@ -13,9 +13,10 @@
       // Void does not take damage
     }
 
-    public override void OnOverlap(Board board, UnitBase overlappingUnit)
+    public override bool OnOverlap(Board board, UnitBase overlappingUnit)
     {
       board.DeleteUnit(overlappingUnit.Id);
+      return true;
     }
 
     public override string ToString()
