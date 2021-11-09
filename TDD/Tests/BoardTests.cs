@@ -1,7 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Moq;
 using NUnit.Framework;
 using TDD.Models;
+using TDD.Models.Enums;
 using TDD.Models.Units;
 
 namespace TDD.Tests
@@ -221,5 +223,57 @@ namespace TDD.Tests
         }
 
         #endregion DeleteUnit
+
+        // ======================================================
+
+        #region TryPush
+
+        [TestCase(Cardinal.North)]
+        [TestCase(Cardinal.South)]
+        [TestCase(Cardinal.East)]
+        [TestCase(Cardinal.West)]
+        public void TryPush_SpaceIsFree_UnitMovesIntoSpace(Cardinal direction)
+        {
+            var unit = new Mage(UnitId);
+            _board.TryPlace(unit, 1, 1);
+            _board.TryPush(UnitId, direction);
+
+            Assert.That(_board.UnitIds[1, 1], Is.Zero);
+            switch (direction)
+            {
+                case Cardinal.North:
+                    Assert.That(_board.UnitIds[1, 0], Is.EqualTo(UnitId));
+                    break;
+                case Cardinal.South:
+                    Assert.That(_board.UnitIds[1, 2], Is.EqualTo(UnitId));
+                    break;
+                case Cardinal.East:
+                    Assert.That(_board.UnitIds[2, 1], Is.EqualTo(UnitId));
+                    break;
+                case Cardinal.West:
+                    Assert.That(_board.UnitIds[0, 1], Is.EqualTo(UnitId));
+                    break;
+            }
+        }
+
+        [TestCase(Cardinal.North)]
+        [TestCase(Cardinal.South)]
+        [TestCase(Cardinal.East)]
+        [TestCase(Cardinal.West)]
+        public void TryPush_SpaceIsBlocked_ReturnsFalseDoesNotMove(Cardinal direction)
+        {
+            var unit = new Mage(UnitId);
+            _board.TryPlace(unit, 1, 1);
+            _board.TryPlace(new Wall(7), 0, 1);
+            _board.TryPlace(new Wall(8), 2, 1);
+            _board.TryPlace(new Wall(9), 1, 0);
+            _board.TryPlace(new Wall(10), 1, 2);
+            var result = _board.TryPush(UnitId, direction);
+
+            Assert.That(result, Is.False);
+            Assert.That(_board.UnitIds[1, 1], Is.EqualTo(UnitId));
+        }
+
+        #endregion
     }
 }

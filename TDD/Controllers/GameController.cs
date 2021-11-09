@@ -1,10 +1,10 @@
 ﻿namespace TDD
 {
-    public class Game
+    public class GameController
     {
         private readonly IConsoleWrapper _console;
 
-        public Game(IConsoleWrapper console)
+        public GameController(IConsoleWrapper console)
         {
             _console = console;
         }

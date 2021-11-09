@@ -38,13 +38,7 @@ namespace TDD
 
             view.PrintBoard();
 
-            // Board.TryMoveUnitTo(mageId, 2, 4);
-            // view.PrintBoard();
-            // Board.TryMoveUnitTo(mageId, 1, 1);
-            // view.PrintBoard();
-            // Board.TryMoveUnitTo(mageId, 0, 0);
-            // view.PrintBoard();
-
+            view.SetTarget(3, 3);
 
             while (true)
             {
@@ -52,16 +46,20 @@ namespace TDD
                 switch (input)
                 {
                     case 'w':
-                        Board.TryPush(mageId, Cardinal.North);
+                        view.MoveTarget(Cardinal.North);
+                        //Board.TryPush(mageId, Cardinal.North);
                         break;
                     case 's':
-                        Board.TryPush(mageId, Cardinal.South);
+                        view.MoveTarget(Cardinal.South);
+                        //Board.TryPush(mageId, Cardinal.South);
                         break;
                     case 'd':
-                        Board.TryPush(mageId, Cardinal.East);
+                        view.MoveTarget(Cardinal.East);
+                        //Board.TryPush(mageId, Cardinal.East);
                         break;
                     case 'a':
-                        Board.TryPush(mageId, Cardinal.West);
+                        view.MoveTarget(Cardinal.West);
+                        //Board.TryPush(mageId, Cardinal.West);
                         break;
                 }
                 view.PrintBoard();

@@ -33,7 +33,6 @@ namespace TDD.Tests
     public void Damage_DealPositiveDamage_ReducesHitPoints(int amount)
     {
       var unit = new UnitBaseTestClass(UnitId);
-      var originalHitPoints = unit.HitPoints;
       unit.Damage(amount);
       
       Assert.That(unit.HitPoints, Is.EqualTo(5-amount));
@@ -43,7 +42,6 @@ namespace TDD.Tests
     public void Damage_DealZeroDamage_DoesNotChangeHitPoints()
     {
       var unit = new UnitBaseTestClass(UnitId);
-      var originalHitPoints = unit.HitPoints;
       unit.Damage(0);
       
       Assert.That(unit.HitPoints, Is.EqualTo(5));

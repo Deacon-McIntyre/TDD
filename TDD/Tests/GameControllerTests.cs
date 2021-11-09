@@ -6,7 +6,7 @@ namespace TDD
     [TestFixture]
     public class GameControllerTests
     {
-        private Game _game;
+        private GameController _controller;
         private Mock<IConsoleWrapper> _consoleMock;
 
         [SetUp]
@@ -14,19 +14,19 @@ namespace TDD
         {
             _consoleMock = new Mock<IConsoleWrapper>();
             _consoleMock.Setup(console => console.ReadLine()).Returns("user_input");
-            _game = new Game(_consoleMock.Object);
+            _controller = new GameController(_consoleMock.Object);
         }
         
         [Test]
         public void CanCreateGame()
         {
-            Assert.NotNull(_game);
+            Assert.NotNull(_controller);
         }
         
         [Test]
         public void GameCanAskForInput()
         {
-            var input = _game.AskForInput();
+            var input = _controller.AskForInput();
             Assert.AreEqual("user_input", input);
         }
     }
