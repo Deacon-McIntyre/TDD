@@ -103,5 +103,10 @@ namespace TDD.Tests
     {
       return "Test";
     }
+
+    public override string Description()
+    {
+      return "A test unit.";
+    }
   }
 }

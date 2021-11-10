@@ -14,9 +14,9 @@ namespace TDD
             return Console.ReadLine();
         }
 
-        public char ReadKey()
+        public ConsoleKey ReadKey()
         {
-            return Console.ReadKey(false).KeyChar;
+            return Console.ReadKey(true).Key;
         }
         
         public void WriteLine(string line)

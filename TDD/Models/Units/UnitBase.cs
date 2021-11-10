@@ -26,5 +26,6 @@
     }
 
     public abstract override string ToString();
+    public abstract string Description();
   }
 }

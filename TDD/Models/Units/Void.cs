@@ -24,5 +24,10 @@
       // " "
       return "•";
     }
+
+    public override string Description()
+    {
+      return "An empty void, don't fall in.";
+    }
   }
 }

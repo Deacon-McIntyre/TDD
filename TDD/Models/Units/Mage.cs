@@ -12,5 +12,10 @@
     {
       return "M";
     }
+
+    public override string Description()
+    {
+      return "A Mage.";
+    }
   }
 }

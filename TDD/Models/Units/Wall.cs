@@ -13,5 +13,10 @@
       // ■
       return "▧";
     }
+
+    public override string Description()
+    {
+      return "A solid wall.";
+    }
   }
 }
