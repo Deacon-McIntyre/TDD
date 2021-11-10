@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text;
 using TDD.Models;
 using TDD.Models.Enums;
+using TDD.Models.Units;
 
 namespace TDD
 {
@@ -10,13 +12,14 @@ namespace TDD
     private readonly IBoard _board;
     private readonly IConsoleWrapper _console;
     private const char EmptyTileCharacter = ' ';
-    private Tuple<int, int> _target;
+    private const string Header = "=================\nWASD to move, Q to cancel, Enter to submit.";
+    public Tuple<int, int> Target { get; set; }
 
     public ConsoleView(IBoard board, IConsoleWrapper console)
     {
       _board = board;
       _console = console;
-      _target = null;
+      Target = null;
     }
 
     public void PrintBoard()
@@ -33,51 +36,20 @@ namespace TDD
       }
     }
 
-    public void SetTarget(int x, int y)
-    {
-      _target = new Tuple<int, int>(x, y);
-    }
-
-    public void ClearTarget()
-    {
-      _target = null;
-    }
-
-    public void MoveTarget(Cardinal direction)
-    {
-      switch (direction)
-      {
-        case Cardinal.North:
-          _target = new Tuple<int, int>(_target.Item1, Math.Max(0, _target.Item2-1));
-          break;
-        case Cardinal.South:
-          _target = new Tuple<int, int>(_target.Item1, Math.Min(_board.UnitIds.GetLength(1)-1, _target.Item2+1));
-          break;
-        case Cardinal.East:
-          _target = new Tuple<int, int>(Math.Min(_board.UnitIds.GetLength(0)-1, _target.Item1+1), _target.Item2);
-          break;
-        case Cardinal.West:
-          _target = new Tuple<int, int>(Math.Max(0, _target.Item1-1), _target.Item2);
-          break;
-        default:
-          throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
-      }
-    }
-
     private void FormatCell(StringBuilder builder, int x, int y)
     {
       // Flip X and Y in here to make visualization look as expected
       var unitId = _board.UnitIds[y, x];
-      if (_target != null)
+      if (Target != null)
       {
-        if (x == _target.Item2 && y == _target.Item1)
+        if (x == Target.Item2 && y == Target.Item1)
         {
           builder.Append($"[{(unitId != 0 ? _board.LookupUnit(unitId) : EmptyTileCharacter)}]");
           return;
         }
 
-        float rise = y - _target.Item1;
-        float run = x - _target.Item2;
+        float rise = y - Target.Item1;
+        float run = x - Target.Item2;
         if (rise != 0 && run != 0)
         {
           float slope = rise / run;
@@ -97,11 +69,31 @@ namespace TDD
       builder.Append($" {(unitId != 0 ? _board.LookupUnit(unitId) : EmptyTileCharacter)} ");
     }
 
-    public void PrintOptions(int targetOption)
+    public void PrintOptions(List<Option> options)
     {
-      _console.WriteLine("=====================");
-      _console.WriteLine($"{(targetOption == 0 ? '⮞' : " ")}Inspect a tile");
-      _console.WriteLine($"{(targetOption == 1 ? '⮞' : " ")}Place a unit");
+      _console.WriteLine(Header);
+      foreach (var option in options)
+      {
+        _console.WriteLine(option.ToString());
+      }
+    }
+
+    public void PrintUnitDetails(int unitId)
+    {
+      _console.WriteLine(Header);
+      if (unitId == 0)
+      {
+        _console.WriteLine("This tile is not occupied.");
+        return;
+      }
+      var unit = _board.LookupUnit(unitId);
+      _console.WriteLine($"{unit.Description()} It has {unit.HitPoints} HP remaining");
+    }
+
+    public void PrintPlaceUnitInfo(UnitBase unit)
+    {
+      _console.WriteLine(Header);
+      _console.WriteLine($"Placing unit: {unit.Description()}");
     }
   }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using TDD.Models;
 using TDD.Models.Enums;
 using TDD.Models.Units;
@@ -8,43 +10,47 @@ namespace TDD
 {
   public class Game
   {
+    private readonly Board _board;
+    private readonly IConsoleWrapper _console;
+    private readonly ConsoleView _view;
+    private readonly int _mageId;
     private int _idCounter = 1;
-    private Board Board;
-    private IConsoleWrapper _console;
-    private ConsoleView _view;
-    private bool _targeting;
-    private int _mageId;
+    private Tuple<int, int> _targetCoords;
+    private State _state;
+    private readonly List<Option> _options;
 
     public Game(IConsoleWrapper console)
     {
-      Board = new Board(6, 6);
+      _board = new Board(6, 6);
       _console = console;
-      _view = new ConsoleView(Board, _console);
-      _targeting = false;
+      _view = new ConsoleView(_board, _console);
+      _targetCoords = new Tuple<int, int>(0, 0);
       _mageId = GetId();
+      _state = State.SelectOption;
+      _options = new List<Option>
+      {
+        new("Inspect tiles", State.InspectUnits, true),
+        new("Place a unit", State.PlaceUnit),
+      };
     }
 
     public void Run()
     {
-      PutVoidAroundOutside();
-      PlaceNewWall(1, 1);
-      PlaceNewWall(1, 2);
-      PlaceNewWall(1, 3);
-      PlaceNewWall(3, 3);
-      PlaceNewWall(4, 3);
-
-      var mage = new Mage(_mageId);
-      Board.TryPlace(mage, 3, 1);
+      SetUp();
 
       while (true)
       {
         _view.PrintBoard();
-        _view.PrintOptions(0);
+        PrintInfo();
+
         var input = _console.ReadKey();
         switch (input)
         {
           case ConsoleKey.Enter:
-            ToggleTargeting();
+            HandleSubmit();
+            break;
+          case ConsoleKey.Q:
+            HandleEscape();
             break;
           case ConsoleKey.W:
             HandleDirection(Cardinal.North);
@@ -62,54 +68,146 @@ namespace TDD
       }
     }
 
-    private void HandleDirection(Cardinal direction)
+    private void PrintInfo()
     {
-      if (_targeting)
+      switch (_state)
       {
-        _view.MoveTarget(direction);
-      }
-      // else if (_choosingOption)
-      // {
-      //
-      // }
-      else
-      {
-        Board.TryPush(_mageId, direction);
+        case State.InspectUnits:
+          _view.PrintUnitDetails(_board.UnitIds[_targetCoords.Item1, _targetCoords.Item2]);
+          break;
+        case State.PlaceUnit:
+          _view.PrintPlaceUnitInfo(new Mage(GetId()));
+          break;
+        default:
+          _view.PrintOptions(_options);
+          break;
       }
     }
 
-    private void ToggleTargeting()
+    private void SetUp()
     {
-      if (_targeting)
+      PutVoidAroundOutside();
+      PlaceNewWall(1, 1);
+      PlaceNewWall(1, 2);
+      PlaceNewWall(1, 3);
+      PlaceNewWall(3, 3);
+      PlaceNewWall(4, 3);
+
+      var mage = new Mage(_mageId);
+      _board.TryPlace(mage, 3, 1);
+    }
+
+    private void HandleDirection(Cardinal direction)
+    {
+      switch (_state)
       {
-        _view.ClearTarget();
-        _targeting = false;
+        case State.SelectOption:
+          MoveOption(direction);
+          break;
+        case State.InspectUnits:
+          MoveTarget(direction);
+          break;
+        case State.PlaceUnit:
+          MoveTarget(direction);
+          break;
+        case State.SimulateGame:
+          _board.TryPush(_mageId, direction);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
       }
-      else
+    }
+
+    private void HandleSubmit()
+    {
+      switch (_state)
       {
-        _view.SetTarget(4, 4);
-        _targeting = true;
+        case State.SelectOption:
+          var nextState = _options.First(o => o.Selected).NextState;
+          if (nextState is State.InspectUnits or State.PlaceUnit)
+          {
+            _view.Target = _targetCoords;
+          }
+          _state = nextState;
+          break;
+        case State.InspectUnits:
+          _view.Target = null;
+          _state = State.SelectOption;
+          break;
+        case State.PlaceUnit:
+          _view.Target = null;
+          _board.TryPlace(new Mage(GetId()), _targetCoords.Item1, _targetCoords.Item2);
+          _state = State.SelectOption;
+          break;
+        case State.SimulateGame:
+          break;
+        default:
+          throw new ArgumentOutOfRangeException();
       }
+    }
+
+    private void HandleEscape()
+    {
+      _view.Target = null;
+      _state = State.SelectOption;
+    }
+
+    private void MoveOption(Cardinal direction)
+    {
+      var selectedOption = _options.IndexOf(_options.Find(o => o.Selected));
+      var increment = direction switch
+      {
+        Cardinal.North => -1,
+        Cardinal.South => 1,
+        _ => 0
+      };
+      var newSelected = Math.Clamp(selectedOption + increment, 0, _options.Count-1);
+      for (var i = 0; i < _options.Count; i++)
+      {
+        _options[i].Selected = i == newSelected;
+      }
+    }
+
+    private void MoveTarget(Cardinal direction)
+    {
+      switch (direction)
+      {
+        case Cardinal.North:
+          _targetCoords = new Tuple<int, int>(_targetCoords.Item1, Math.Max(0, _targetCoords.Item2-1));
+          break;
+        case Cardinal.South:
+          _targetCoords = new Tuple<int, int>(_targetCoords.Item1, Math.Min(_board.UnitIds.GetLength(1)-1, _targetCoords.Item2+1));
+          break;
+        case Cardinal.East:
+          _targetCoords = new Tuple<int, int>(Math.Min(_board.UnitIds.GetLength(0)-1, _targetCoords.Item1+1), _targetCoords.Item2);
+          break;
+        case Cardinal.West:
+          _targetCoords = new Tuple<int, int>(Math.Max(0, _targetCoords.Item1-1), _targetCoords.Item2);
+          break;
+        default:
+          throw new ArgumentOutOfRangeException(nameof(direction), direction, null);
+      }
+      _view.Target = _targetCoords;
     }
 
     private void PlaceNewWall(int x, int y)
     {
       var wall = new Wall(GetId());
 
-      Board.TryPlace(wall, x, y);
+      _board.TryPlace(wall, x, y);
     }
 
     private void PlaceNewVoid(int x, int y)
     {
       var voidTile = new Void(GetId());
 
-      Board.TryPlace(voidTile, x, y);
+      _board.TryPlace(voidTile, x, y);
     }
 
     private void PutVoidAroundOutside()
     {
-      var xLimit = Board.UnitIds.GetLength(0);
-      var yLimit = Board.UnitIds.GetLength(1);
+      var xLimit = _board.UnitIds.GetLength(0);
+      var yLimit = _board.UnitIds.GetLength(1);
       for (var x = 0; x < xLimit; x++)
       {
         for (var y = 0; y < yLimit; y++)
