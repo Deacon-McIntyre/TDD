@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TDD.Models;
 using TDD.Models.Enums;
+using TDD.Models.Options;
 using TDD.Models.Units;
 using Void = TDD.Models.Units.Void;
 
@@ -17,20 +18,26 @@ namespace TDD
     private int _idCounter = 1;
     private Tuple<int, int> _targetCoords;
     private State _state;
-    private readonly List<Option> _options;
+    private readonly List<StringOption> _options;
+    private readonly List<UnitOption> _placeableUnits;
 
     public Game(IConsoleWrapper console)
     {
       _board = new Board(6, 6);
       _console = console;
-      _view = new ConsoleView(_board, _console);
+      _view = new ConsoleView(_console);
       _targetCoords = new Tuple<int, int>(0, 0);
       _mageId = GetId();
       _state = State.SelectOption;
-      _options = new List<Option>
+      _options = new List<StringOption>
       {
         new("Inspect tiles", State.InspectUnits, true),
-        new("Place a unit", State.PlaceUnit),
+        new("Place a unit", State.SelectUnit),
+      };
+      _placeableUnits = new List<UnitOption>
+      {
+        new(new Mage(GetId()), State.PlaceUnit, true),
+        new(new Wall(GetId()), State.PlaceUnit)
       };
     }
 
@@ -40,7 +47,7 @@ namespace TDD
 
       while (true)
       {
-        _view.PrintBoard();
+        _view.PrintBoard(_board);
         PrintInfo();
 
         var input = _console.ReadKey();
@@ -73,7 +80,11 @@ namespace TDD
       switch (_state)
       {
         case State.InspectUnits:
-          _view.PrintUnitDetails(_board.UnitIds[_targetCoords.Item1, _targetCoords.Item2]);
+          var unitId = _board.UnitIds[_targetCoords.Item1, _targetCoords.Item2];
+          _view.PrintUnitDetails(unitId == 0 ? null: _board.LookupUnit(unitId));
+          break;
+        case State.SelectUnit:
+          _view.PrintSelectUnitInfo(_placeableUnits);
           break;
         case State.PlaceUnit:
           _view.PrintPlaceUnitInfo(new Mage(GetId()));
@@ -102,10 +113,13 @@ namespace TDD
       switch (_state)
       {
         case State.SelectOption:
-          MoveOption(direction);
+          MoveOption(_options, direction);
           break;
         case State.InspectUnits:
           MoveTarget(direction);
+          break;
+        case State.SelectUnit:
+          MoveOption(_placeableUnits, direction);
           break;
         case State.PlaceUnit:
           MoveTarget(direction);
@@ -136,7 +150,7 @@ namespace TDD
           break;
         case State.PlaceUnit:
           _view.Target = null;
-          _board.TryPlace(new Mage(GetId()), _targetCoords.Item1, _targetCoords.Item2);
+          _board.TryPlace(_placeableUnits.First(o => o.Selected).Unit, _targetCoords.Item1, _targetCoords.Item2);
           _state = State.SelectOption;
           break;
         case State.SimulateGame:
@@ -152,9 +166,9 @@ namespace TDD
       _state = State.SelectOption;
     }
 
-    private void MoveOption(Cardinal direction)
+    private void MoveOption(List<Option> options, Cardinal direction)
     {
-      var selectedOption = _options.IndexOf(_options.Find(o => o.Selected));
+      var selectedOption = options.IndexOf(_options.Find(o => o.Selected));
       var increment = direction switch
       {
         Cardinal.North => -1,
@@ -162,9 +176,9 @@ namespace TDD
         _ => 0
       };
       var newSelected = Math.Clamp(selectedOption + increment, 0, _options.Count-1);
-      for (var i = 0; i < _options.Count; i++)
+      for (var i = 0; i < options.Count; i++)
       {
-        _options[i].Selected = i == newSelected;
+        options[i].Selected = i == newSelected;
       }
     }
 

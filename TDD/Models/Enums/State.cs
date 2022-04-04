@@ -4,6 +4,7 @@
   {
     SelectOption,
     InspectUnits,
+    SelectUnit,
     PlaceUnit,
     SimulateGame
   }

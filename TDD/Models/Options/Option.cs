@@ -1,8 +1,8 @@
 ﻿using TDD.Models.Enums;
 
-namespace TDD.Models
+namespace TDD.Models.Options
 {
-  public class Option
+  public abstract class Option
   {
     public State NextState { get; }
     public bool Selected { get; set; }

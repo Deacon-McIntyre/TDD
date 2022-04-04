@@ -27,7 +27,7 @@ namespace TDD
           _consoleMessages.Add(s);
         }
       );
-      _view = new ConsoleView(_boardMock.Object, _consoleMock.Object);
+      _view = new ConsoleView(_consoleMock.Object);
 
       _consoleMessages = new List<string>();
     }
@@ -36,13 +36,13 @@ namespace TDD
     public void CanDisplayEmptyBoard()
     {
       SetupBoard(4, 4);
-      _view.PrintBoard();
+      _view.PrintBoard(_boardMock.Object);
       
       _consoleMock.Verify(c => c.WriteLine(It.IsAny<string>()), Times.Exactly(4));
-      Assert.That(_consoleMessages[0], Is.EqualTo("[ ][ ][ ][ ]"));
-      Assert.That(_consoleMessages[1], Is.EqualTo("[ ][ ][ ][ ]"));
-      Assert.That(_consoleMessages[2], Is.EqualTo("[ ][ ][ ][ ]"));
-      Assert.That(_consoleMessages[3], Is.EqualTo("[ ][ ][ ][ ]"));
+      Assert.That(_consoleMessages[0], Is.EqualTo("            "));
+      Assert.That(_consoleMessages[1], Is.EqualTo("            "));
+      Assert.That(_consoleMessages[2], Is.EqualTo("            "));
+      Assert.That(_consoleMessages[3], Is.EqualTo("            "));
     }
 
     [Test]
@@ -54,13 +54,13 @@ namespace TDD
         new(1, 2)
       };
       SetupBoard(4, 4, unitCoords);
-      _view.PrintBoard();
+      _view.PrintBoard(_boardMock.Object);
       
       _consoleMock.Verify(c => c.WriteLine(It.IsAny<string>()), Times.Exactly(4));
-      Assert.That(_consoleMessages[0], Is.EqualTo("[M][ ][ ][ ]"));
-      Assert.That(_consoleMessages[1], Is.EqualTo("[ ][ ][ ][ ]"));
-      Assert.That(_consoleMessages[2], Is.EqualTo("[ ][M][ ][ ]"));
-      Assert.That(_consoleMessages[3], Is.EqualTo("[ ][ ][ ][ ]"));
+      Assert.That(_consoleMessages[0], Is.EqualTo(" M          "));
+      Assert.That(_consoleMessages[1], Is.EqualTo("            "));
+      Assert.That(_consoleMessages[2], Is.EqualTo("    M       "));
+      Assert.That(_consoleMessages[3], Is.EqualTo("            "));
     }
 
     private void SetupBoard(int x, int y, List<Tuple<int, int>> unitCoords = null)
